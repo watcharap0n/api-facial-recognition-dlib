@@ -1,0 +1,7 @@
+.idea
+*__pycache__
+Pipfile
+Pipfile.lock
+service-rec/datasets
+service-rec/log.txt
+*.pk
