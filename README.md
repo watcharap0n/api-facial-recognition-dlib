@@ -30,7 +30,7 @@ $ source venv/bin/activate
  
 ```
 
-### Before execution
+### Before execution (Optional)
 
 first before execution path prefix /executor. you can setting directory put image to directory for training model & preprocessing 
 
