@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  service_rec:
+    build: service-rec
+    container_name: service_rec
+    image: kaneai/service_rec:latest
+    ports:
+      - "80:80"
+    env_file:
+      - app.env
+    depends_on:
+      - redis
+    links:
+      - redis
+    networks:
+      - default
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./service-rec/server/redis_data:/data
+    networks:
+      - default
+
+networks:
+  default:
+    external:
+      name:
+        microservice_network
