@@ -6,13 +6,13 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from .schemas.log import LOGGER
-from .router import setting, report, executor
+from .router import setting, report, executor, predict
 
 app = FastAPI(
-    version=os.environ.get('SERVER_VERSION', '1.0.1'),
-    docs_url='/docs',
-    redoc_url='/redoc',
-    openapi_url='/openapi.json',
+    version=os.environ.get('SERVER_VERSION', '0.0.1'),
+    docs_url='/api/v1/docs',
+    redoc_url='/api/v1/redoc',
+    openapi_url='/api/v1/openapi.json',
     include_in_schema=os.getenv('OPENAPI_SCHEMA', True),
 )
 
@@ -37,19 +37,21 @@ app.add_middleware(
 )
 
 description = """
-Face Recognition. 👋🏻
+### APIs AI/ML (DLIB shape 68 marks) 
 
-## APIs
+service available to use management structure model machine learning such as preprocessing myself and training model myself all service with APIs you can read documentation below.
 
-You can **read items each API**.
+---
 
-You will be able to:
+**Documentation:** <a href="https://fastapi.tiangolo.com" target="_blank">https://fastapi.tiangolo.com</a>
 
-***prefix /***
+**Developed @MangoConsultant**
+
+---
 """
 
 
-@app.get('/404', response_class=HTMLResponse)
+@app.get('/404', response_class=HTMLResponse, tags=['others'])
 async def not_found_page():
     return """
         <html>
@@ -72,8 +74,8 @@ def customer_openapi_signature():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
-        title="Face Recognition",
-        version="1.0.1",
+        title="Face Recognition Variables API",
+        version="0.0.1",
         description=description,
         routes=app.routes,
     )
@@ -104,19 +106,25 @@ async def add_process_time_header(request: Request, call_next):
 app.include_router(
     setting.router,
     prefix='/setting',
-    tags=['Setting']
+    tags=['settings']
 )
 
 app.include_router(
     report.router,
     prefix='/report',
-    tags=['Report']
+    tags=['reports']
 )
 
 app.include_router(
     executor.router,
     prefix='/executor',
-    tags=['Executor']
+    tags=['executors'],
+)
+
+app.include_router(
+    predict.router,
+    prefix='/predict',
+    tags=['predictions']
 )
 
 
@@ -130,4 +138,3 @@ async def startup_event():
     root_dir = os.path.abspath('.')
     trained_folder = os.path.join(root_dir, 'trained_models')
     os.makedirs(trained_folder, exist_ok=True)
-
