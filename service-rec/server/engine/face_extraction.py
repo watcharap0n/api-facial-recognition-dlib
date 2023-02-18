@@ -35,7 +35,7 @@ async def train_model_facials(config: Config):
         'training_status_success': False,
         'training_status': '0.0 %'
     }
-    await redis_conn.set('training_model', json.dumps(report_progress))
+    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
 
     stff = time.time()
     datasets_folder = os.listdir(config.datasets_folder)
@@ -56,7 +56,7 @@ async def train_model_facials(config: Config):
                     sec = (time.time() - stff)
                     time_avg.append(sec)
             report_progress['training_progress'] = f'{training_progress} %'
-            await redis_conn.set('training_model', json.dumps(report_progress))
+            await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
             LOGGER.info(
                 f'check labels while train in folder: {datasets_folder[length]} each label: {os.listdir(path_labels)}')
             LOGGER.info(f'progress trained is {training_progress} %')
@@ -75,5 +75,5 @@ async def train_model_facials(config: Config):
     report_progress['training_method'] = 'Trained model is complete'
     report_progress['training_status_success'] = True
     report_progress['training_progress'] = '100 %'
-    await redis_conn.set('training_model', json.dumps(report_progress))
+    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
     LOGGER.info('=======Finish trained model========')
