@@ -117,8 +117,8 @@ app.include_router(
 
 app.include_router(
     executor.router,
-    prefix='/executor',
-    tags=['executors'],
+    prefix='/execute',
+    tags=['executes'],
 )
 
 app.include_router(
