@@ -1,38 +1,47 @@
 import os
 import json
 from fastapi import APIRouter, status, BackgroundTasks, Depends, HTTPException
-from ..engine import Config, ReportConfig
+from ..engine import ReportConfig
 from ..dependencies.redis_connection import init_redis
 from ..schemas.report import ReportCropped
+from ..schemas.other import SuccessRequest
 from ..schemas.log import log_transaction, StatusTraining
 
 router = APIRouter()
 
-DATA_CACHE = {}
+
+@router.get('/get-models', response_model=SuccessRequest)
+async def get_models_from_directory():
+    root_dir = os.path.abspath('.')
+    dir_models = os.path.join(root_dir, 'trained_models')
+    return {'status': True, 'detail': {'list_model': os.listdir(dir_models)}}
 
 
 @router.get(
-    '/training',
+    '/crop-train',
     response_model=StatusTraining,
     status_code=status.HTTP_200_OK,
 )
-async def report_training_status(background_task: BackgroundTasks,
-                                 redis_conn=Depends(init_redis)):
+async def report_training_status(
+        background_task: BackgroundTasks,
+        file_trained_model: str,
+        redis_conn=Depends(init_redis)
+):
     background_task.add_task(
         log_transaction,
         method='/GET',
         endpoint='/report/training',
     )
-    redis_model = await redis_conn.get('training_model')
-    redis_model = json.loads(redis_model)
-    if not redis_model:
+    redis_model = await redis_conn.get(file_trained_model)
+    if redis_model is None:
         raise HTTPException(status_code=status.HTTP_200_OK,
                             detail='Not in progress train model.')
+    redis_model = json.loads(redis_model)
     return redis_model
 
 
-@router.post('/cropped', response_model=ReportCropped)
-async def report_cropped_images(config: ReportConfig):
+@router.post('/cropped/complete', response_model=ReportCropped)
+async def return_error_cropped_image(config: ReportConfig):
     root_dir = os.path.abspath('.')
     try:
         datasets = os.path.join(root_dir, config.datasets_folder)
@@ -64,9 +73,3 @@ async def report_cropped_images(config: ReportConfig):
     model_store.status = False
     model_store.detail = details_missing
     return model_store
-
-
-@router.get('/training/delete')
-async def report_training_delete_status(redis_conn=Depends(init_redis)):
-    await redis_conn.delete('training_model')
-    return {'status': True, 'message': 'Success delete memory cache.'}
