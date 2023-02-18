@@ -58,9 +58,6 @@ class Config(BaseModel):
 class ReportConfig(BaseModel):
     datasets_folder: Union[str, None] = os.path.join(ROOT_DIR, 'datasets')
     labels_folder: Union[str, None] = 'labels'
-    file_trained_model: Union[str, None] = 'trained_model'
-    scale: Optional[float] = 0.5
-    img_pixel: Optional[int] = 128
     recent_time: Optional[datetime] = None
 
     @validator('datasets_folder', pre=True)
@@ -93,8 +90,5 @@ class ReportConfig(BaseModel):
             'example': {
                 'datasets_folder': 'datasets',
                 'labels_folder': 'labels',
-                'file_trained_model': 'trained_model',
-                'scale': 0.5,
-                'img_pixel': 128,
             }
         }
