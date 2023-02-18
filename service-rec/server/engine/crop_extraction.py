@@ -58,7 +58,7 @@ async def crop_extraction_faces(config: Config):
                         cv2.imwrite(os.path.join(path_labels, i), image)
 
             report_progress['training_progress'] = f'{cropped_progress} %'
-            await redis_conn.set('training_model', json.dumps(report_progress))
+            await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
             LOGGER.info(f'check labels in folder: {datasets_folder[ids]} each label: {os.listdir(path_labels)}')
             LOGGER.info(f'progress copped is {cropped_progress} %')
 
@@ -66,5 +66,5 @@ async def crop_extraction_faces(config: Config):
     report_progress['training_method'] = 'Cropped images is complete'
     report_progress['training_status_success'] = False
     report_progress['training_progress'] = '100 %'
-    await redis_conn.set('training_model', json.dumps(report_progress))
+    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
     LOGGER.info('=======Finish cropped========')
