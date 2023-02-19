@@ -21,10 +21,11 @@ sp = dlib.shape_predictor(sp_68_face)
 model = dlib.face_recognition_model_v1(fr_model_v1)
 
 
-async def train_model_facials(config: Config):
+async def train_model_facials(config: Config, uuid: str):
     """
     Training dlib model
 
+    :param uuid:
     :param config:
     :return:
     """
@@ -35,7 +36,7 @@ async def train_model_facials(config: Config):
         'training_status_success': False,
         'training_status': '0.0 %'
     }
-    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
+    await redis_conn.set(uuid, json.dumps(report_progress))
 
     stff = time.time()
     datasets_folder = os.listdir(config.datasets_folder)
@@ -56,7 +57,7 @@ async def train_model_facials(config: Config):
                     sec = (time.time() - stff)
                     time_avg.append(sec)
             report_progress['training_progress'] = f'{training_progress} %'
-            await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
+            await redis_conn.set(uuid, json.dumps(report_progress))
             LOGGER.info(
                 f'check labels while train in folder: {datasets_folder[length]} each label: {os.listdir(path_labels)}')
             LOGGER.info(f'progress trained is {training_progress} %')
@@ -68,12 +69,13 @@ async def train_model_facials(config: Config):
     avg = time_avg[-1] / len(time_avg)
     LOGGER.info('time spending: {} sec '.format(str(round(avg, 2))))
     root_dir = os.path.abspath('.')
+    root_dir = os.path.join(root_dir, 'assets')
     path_trained_model = os.path.join(root_dir, 'trained_models')
-    save_model_dir = os.path.join(path_trained_model, config.file_trained_model)
+    save_model_dir = os.path.join(path_trained_model, config.model_file)
     pickle.dump((FACE_DETECTOR, FACE_NAME), open(f'{save_model_dir}.pk', 'wb'))
     LOGGER.info(f'progress trained is 100 %')
     report_progress['training_method'] = 'Trained model is complete'
     report_progress['training_status_success'] = True
     report_progress['training_progress'] = '100 %'
-    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
+    await redis_conn.set(uuid, json.dumps(report_progress))
     LOGGER.info('=======Finish trained model========')
