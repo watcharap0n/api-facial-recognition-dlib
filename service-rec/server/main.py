@@ -6,7 +6,7 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from .schemas.log import LOGGER
-from .router import setting, report, executor, predict
+from .router import report, execute, predict, image
 
 app = FastAPI(
     version=os.environ.get('SERVER_VERSION', '0.0.1'),
@@ -88,27 +88,6 @@ def customer_openapi_signature():
 
 app.openapi = customer_openapi_signature
 
-
-@app.middleware('http')
-async def add_process_time_header(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    process_time = '{:2f}'.format(process_time)
-    response.headers['X-Process-Time'] = str(process_time)
-    pass_url = str(request.url)
-    sentence = '../../' or '..%2F..%2F' or '/../../'
-    if sentence in pass_url:
-        return RedirectResponse(status_code=status.HTTP_303_SEE_OTHER, url='/404')
-    return response
-
-
-app.include_router(
-    setting.router,
-    prefix='/setting',
-    tags=['settings']
-)
-
 app.include_router(
     report.router,
     prefix='/report',
@@ -116,7 +95,7 @@ app.include_router(
 )
 
 app.include_router(
-    executor.router,
+    execute.router,
     prefix='/execute',
     tags=['executes'],
 )
@@ -125,6 +104,12 @@ app.include_router(
     predict.router,
     prefix='/predict',
     tags=['predictions']
+)
+
+app.include_router(
+    image.router,
+    prefix='/image',
+    tags=['images']
 )
 
 
