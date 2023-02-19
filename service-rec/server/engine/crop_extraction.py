@@ -2,22 +2,26 @@ import os
 import json
 import dlib
 import cv2
+from typing import Optional
 from .model import Config
 from ..schemas.log import LOGGER
 from ..dependencies.redis_connection import init_redis
+from .face_extraction import train_model_facials
 
 PATH_ROOT_MODEL = 'models'
 detector = dlib.get_frontal_face_detector()
 
 
-async def crop_extraction_faces(config: Config):
+async def crop_extraction_faces(config: Config, uuid: str, forward: Optional[bool] = False):
     """ Crop facials to directory each path_labels
 
+    :param forward:
+    :param uuid:
     :param config:
     :param detector:
-
     :return:
     """
+
     LOGGER.info(f'execute payload: {config.dict() if config.dict() else "error payload"}')
     redis_conn = await init_redis()
     report_progress = {
@@ -58,7 +62,7 @@ async def crop_extraction_faces(config: Config):
                         cv2.imwrite(os.path.join(path_labels, i), image)
 
             report_progress['training_progress'] = f'{cropped_progress} %'
-            await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
+            await redis_conn.set(uuid, json.dumps(report_progress))
             LOGGER.info(f'check labels in folder: {datasets_folder[ids]} each label: {os.listdir(path_labels)}')
             LOGGER.info(f'progress copped is {cropped_progress} %')
 
@@ -66,5 +70,8 @@ async def crop_extraction_faces(config: Config):
     report_progress['training_method'] = 'Cropped images is complete'
     report_progress['training_status_success'] = False
     report_progress['training_progress'] = '100 %'
-    await redis_conn.set(config.file_trained_model, json.dumps(report_progress))
+    await redis_conn.set(uuid, json.dumps(report_progress))
     LOGGER.info('=======Finish cropped========')
+
+    if forward:
+        await train_model_facials(config, uuid)
