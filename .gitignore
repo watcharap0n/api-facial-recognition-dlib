@@ -5,3 +5,6 @@ Pipfile.lock
 service-rec/datasets
 service-rec/log.txt
 *.pk
+*.png
+*.jpg
+*.jpeg
