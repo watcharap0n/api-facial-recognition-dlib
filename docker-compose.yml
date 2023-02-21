@@ -5,10 +5,11 @@ services:
     build: service-rec
     container_name: service_rec
     image: kaneai/service_rec:latest
+    volumes:
+      - ./service-rec/assets:/assets
+      - ./service-rec/trained_models:/trained_models
     ports:
       - "80:80"
-    env_file:
-      - app.env
     depends_on:
       - redis
     links:
