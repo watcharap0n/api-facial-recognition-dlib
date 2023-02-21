@@ -122,4 +122,6 @@ async def startup_event():
     os.makedirs(static_dir, exist_ok=True)
     root_dir = os.path.abspath('.')
     trained_folder = os.path.join(root_dir, 'trained_models')
+    assets_folder = os.path.join(root_dir, 'assets')
     os.makedirs(trained_folder, exist_ok=True)
+    os.makedirs(assets_folder, exist_ok=True)
