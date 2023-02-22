@@ -8,3 +8,4 @@ service-rec/log.txt
 *.png
 *.jpg
 *.jpeg
+*.pem
