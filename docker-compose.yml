@@ -5,9 +5,12 @@ services:
     build: service-rec
     container_name: service_rec
     image: kaneai/service_rec:latest
+    env_file:
+      - .app.env
     volumes:
-      - ./service-rec/assets:/assets
-      - ./service-rec/trained_models:/trained_models
+      - ./assets:/assets
+      - ./assets/trained_models:/assets/trained_models
+      - ./images:/service_rec/static/images/predicted
     ports:
       - "8080:8080"
     depends_on:
