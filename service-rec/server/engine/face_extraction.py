@@ -12,9 +12,9 @@ FACE_DETECTOR = []
 FACE_NAME = []
 time_avg = []
 
-PATH_ROOT_MODEL = os.path.abspath('server/engine/models')
-sp_68_face = os.path.join(PATH_ROOT_MODEL, 'shape_predictor_68_face_landmarks.dat')
-fr_model_v1 = os.path.join(PATH_ROOT_MODEL, 'dlib_face_recognition_resnet_model_v1.dat')
+PATH_ROOT_MODEL = os.path.join(os.path.dirname(__file__))
+sp_68_face = os.path.join(PATH_ROOT_MODEL, 'models/shape_predictor_68_face_landmarks.dat')
+fr_model_v1 = os.path.join(PATH_ROOT_MODEL, 'models/dlib_face_recognition_resnet_model_v1.dat')
 
 detector = dlib.get_frontal_face_detector()
 sp = dlib.shape_predictor(sp_68_face)
