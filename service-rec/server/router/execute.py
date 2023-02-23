@@ -84,10 +84,14 @@ async def execute_training_model(config: ConfigTrain, background_task: Backgroun
                    'before training you can check in api /report/cropped'
         )
 
-    id_folder = os.listdir(dataset_folder)[0]
-    full_id_folder = os.path.join(dataset_folder, id_folder)
+    id_folder = os.listdir(dataset_folder)
+    for file in id_folder:
+        if os.path.isfile(file):
+            os.remove(os.path.join(dataset_folder, file))
 
-    if not os.path.exists(os.path.join(full_id_folder, config.labels_folder)):
+    full_id_folder = os.path.join(dataset_folder, id_folder[0])
+    first_label = os.path.join(full_id_folder, config.labels_folder)
+    if not os.path.exists(first_label):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Please check your folder for the training model or '
