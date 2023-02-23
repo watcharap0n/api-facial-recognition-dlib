@@ -40,26 +40,29 @@ async def crop_extraction_faces(config: Config, uuid: str, forward: Optional[boo
             for i in os.listdir(path_ids):
                 path_img = os.path.join(path_ids, i)
                 if i.endswith('.jpg') or i.endswith('.png') or i.endswith('.jpeg') or i.endswith('.JPG'):
-                    image_color = cv2.imread(path_img)
-                    image = cv2.resize(
-                        image_color,
-                        None,
-                        fx=config.scale,
-                        fy=config.scale,
-                        interpolation=cv2.INTER_AREA
-                    )
+                    image = cv2.imread(path_img)
+                    height, width, color = image.shape
+                    if height >= 1280:
+                        image = cv2.resize(
+                            image,
+                            None,
+                            fx=config.scale,
+                            fy=config.scale,
+                            interpolation=cv2.INTER_AREA
+                        )
                     gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                     dets = detector(gray_scale, 1)
                     for k, d in enumerate(dets):
                         x, y = d.left(), d.top()
                         w, h = d.right(), d.bottom()
                         cropped_image = image[y:h, x:w]  # cropped_image
-                        image = cv2.resize(
-                            cropped_image, (
-                                config.img_pixel,
-                                config.img_pixel
-                            ), interpolation=cv2.INTER_AREA)
-                        cv2.imwrite(os.path.join(path_labels, i), image)
+                        if height >= 1280:
+                            cropped_image = cv2.resize(
+                                cropped_image, (
+                                    config.img_pixel,
+                                    config.img_pixel
+                                ), interpolation=cv2.INTER_AREA)
+                        cv2.imwrite(os.path.join(path_labels, i), cropped_image)
 
             report_progress['training_progress'] = f'{cropped_progress} %'
             await redis_conn.set(uuid, json.dumps(report_progress))
