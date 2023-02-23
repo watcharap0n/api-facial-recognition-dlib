@@ -4,8 +4,10 @@ Pipfile
 Pipfile.lock
 service-rec/datasets
 service-rec/log.txt
+.DS_Store
 *.pk
 *.png
 *.jpg
 *.jpeg
 *.pem
+*.rdb
