@@ -9,3 +9,4 @@ service-rec/log.txt
 *.jpg
 *.jpeg
 *.pem
+*.rdb
