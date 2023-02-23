@@ -1,10 +1,10 @@
-FROM python:3.9-slim
+FROM python:3.10.3-slim-bullseye
 
 WORKDIR service_rec
 
 COPY requirements.txt .
 
-RUN apt-get update && apt-get -y install cmake protobuf-compiler libx11-dev
+RUN apt-get -y update
 RUN apt-get install -y --fix-missing \
     build-essential \
     cmake \
@@ -28,6 +28,12 @@ RUN apt-get install -y --fix-missing \
     zip \
     && apt-get clean && rm -rf /tmp/* /var/tmp/*
 
+RUN cd ~ && \
+    mkdir -p dlib && \
+    git clone -b 'v19.9' --single-branch https://github.com/davisking/dlib.git dlib/ && \
+    cd  dlib/ && \
+    python3 setup.py install --yes USE_AVX_INSTRUCTIONS
+
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
@@ -35,4 +41,4 @@ COPY server .
 
 WORKDIR ../
 
-CMD ["uvicorn", "service_rec.main:app", "--proxy-headers", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "service_rec.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "8"]
