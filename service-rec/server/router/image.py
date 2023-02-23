@@ -14,7 +14,7 @@ responses_file = {
 
 @router.get('/get-id', response_model=SuccessRequest)
 async def get_id_images(background_task: BackgroundTasks):
-    pred_dir = os.path.join(ROOT_DIR, 'server/static/images/predicted')
+    pred_dir = os.path.join(ROOT_DIR, f'{os.getenv("ROOT_DIR", "server")}/static/images/predicted')
 
     background_task.add_task(
         log_transaction,
@@ -36,7 +36,7 @@ async def download_image_predicted(
 ):
     if not id_img.endswith('.png'):
         id_img = f'{id_img}.png'
-    pred_dir = os.path.join(ROOT_DIR, 'server/static/images/predicted')
+    pred_dir = os.path.join(ROOT_DIR, f'{os.getenv("ROOT_DIR", "server")}/static/images/predicted')
     path_img = os.path.join(pred_dir, f'{id_img}')
     if not os.path.exists(path_img):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Not found image {id_img}')
@@ -54,7 +54,7 @@ async def remove_image(
         background_task: BackgroundTasks,
         id_img: str = Path(description='ID Image on folder directory static/images/predicted/')
 ):
-    pred_dir = os.path.join(ROOT_DIR, 'server/static/images/predicted')
+    pred_dir = os.path.join(ROOT_DIR, f'{os.getenv("ROOT_DIR", "server")}/static/images/predicted')
     path_img = os.path.join(pred_dir, f'{id_img}')
     if not os.path.exists(path_img):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Not found image {id_img}')
