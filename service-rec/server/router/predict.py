@@ -22,7 +22,7 @@ async def prediction_image(
 ):
     allowed_extensions = ("jpg", "jpeg", "png")
 
-    static_dir = os.path.join(ROOT_DIR, 'server/static')
+    static_dir = os.path.join(ROOT_DIR, f'{os.getenv("ROOT_DIR", "server")}/static')
     save_img = os.path.join(static_dir, 'save_cache_img')
     ext = file.filename.split(".")[-1]
     if ext not in allowed_extensions:
