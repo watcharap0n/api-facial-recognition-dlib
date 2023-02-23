@@ -15,13 +15,17 @@ ROOT_DIR = os.path.join(ROOT_DIR, 'assets')
 @router.get('/get-models', response_model=SuccessRequest)
 async def get_models_from_directory(background_task: BackgroundTasks):
     dir_models = os.path.join(ROOT_DIR, 'trained_models')
+    files_model = os.listdir(dir_models)
+    for file in files_model:
+        if os.path.isfile(file):
+            os.remove(os.path.join(dir_models, file))
 
     background_task.add_task(
         log_transaction,
         method='/GET',
         endpoint='/get-models',
     )
-    return {'status': True, 'detail': {'list_model': os.listdir(dir_models)}}
+    return {'status': True, 'detail': {'list_model': files_model}}
 
 
 @router.get(
