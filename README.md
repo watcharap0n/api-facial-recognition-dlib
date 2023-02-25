@@ -32,18 +32,37 @@ $ source venv/bin/activate
  
 ```
 
+## Installation Docker
+- Get to the link -> https://docs.docker.com/desktop/install/windows-install/
+- install file
+- restart your computer
+- open terminal and todo below
+
+```bash
+$ wsl --update
+$ docker -v
+$ docker-compose -v
+```
+
 ## Deploy on Docker
 
 ```bash
-$ docker network create microservice_network
-$ docker-compose up -d
+$ docker-compose -f docker-compose.portainer.yml up -d | (optional)
+$ docker network create microservice_network | (require)
+$ docker-compose up -d | (require)
 ```
 
-## check your docker container
+## Check your docker container
 
 ```bash
 $ docker images
 $ docker ps
+```
+
+## Remove containers & images
+
+```bash
+$ docker-compose down --rmi all
 ```
 
 open browser http://localhost:8080
@@ -53,7 +72,7 @@ open browser http://localhost:8080
 first before execution path prefix /executor. you can setting directory put image to directory for training model &
 preprocessing
 
-- API  **/setting/config**
+- API  **Scheme**
     - payload body
         ```python
         class Config(BaseModel):
