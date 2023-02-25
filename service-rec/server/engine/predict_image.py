@@ -80,11 +80,11 @@ async def predict(img: str, model_file: str):
             UNKNOWN.append(name)
             percent = 1.0 - det[idx]
             percent = percent * 100
-            # cv2.putText(image, possible_person, (xy[0], xy[1] + 95), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1,
-            #             cv2.LINE_AA)
-            # cv2.putText(image, f'{round(percent, 1)}%', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
-            #             (0, 0, 255), 2,
-            #             cv2.LINE_AA)
+            cv2.putText(image, possible_person, (xy[0], xy[1] + 95), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1,
+                        cv2.LINE_AA)
+            cv2.putText(image, f'{round(percent, 1)}%', (xy[0], xy[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
+                        (0, 0, 255), 2,
+                        cv2.LINE_AA)
             cv2.rectangle(image, xy, wh, (0, 0, 255), 2)
 
     img_name = uuid.uuid4().hex
