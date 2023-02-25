@@ -1,12 +1,11 @@
 import os
-import time
 from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from .schemas.log import LOGGER
-from .router import report, execute, predict, image
+from .router import report, execute, image
 
 app = FastAPI(
     version=os.environ.get('SERVER_VERSION', '0.0.1'),
@@ -98,12 +97,6 @@ app.include_router(
     execute.router,
     prefix='/execute',
     tags=['executes'],
-)
-
-app.include_router(
-    predict.router,
-    prefix='/predict',
-    tags=['predictions']
 )
 
 app.include_router(
